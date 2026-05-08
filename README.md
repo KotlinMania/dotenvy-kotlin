@@ -173,7 +173,7 @@ Until then, this repo dutifully carries on the dotenv torch. It is actively main
 
 ```kotlin
 dependencies {
-    implementation("io.github.kotlinmania:dotenvy-kotlin:0.1.0-SNAPSHOT")
+    implementation("io.github.kotlinmania:dotenvy-kotlin:0.1.0")
 }
 ```
 
