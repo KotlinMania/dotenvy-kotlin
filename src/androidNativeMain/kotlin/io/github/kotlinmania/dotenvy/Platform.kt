@@ -1,11 +1,10 @@
-// port-lint: ignore (Apple POSIX implementation of env/cwd shims for src/lib.rs and src/find.rs)
+// port-lint: ignore (Android Native POSIX implementation of env/cwd shims for src/lib.rs and src/find.rs)
 @file:OptIn(ExperimentalForeignApi::class)
 
 package io.github.kotlinmania.dotenvy
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
-import platform.Foundation.NSFileManager
 import platform.posix.getenv
 import platform.posix.setenv
 
@@ -17,5 +16,4 @@ internal actual fun setEnvVar(name: String, value: String) {
 
 internal actual fun envVars(): List<Pair<String, String>> = emptyList()
 
-internal actual fun currentDirectory(): String? =
-    NSFileManager.defaultManager.currentDirectoryPath
+internal actual fun currentDirectory(): String? = null
