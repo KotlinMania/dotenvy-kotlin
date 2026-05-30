@@ -45,6 +45,10 @@ val commonOptIns =
     listOf(
         "kotlin.time.ExperimentalTime",
         "kotlin.concurrent.atomics.ExperimentalAtomicApi",
+        // dotenvy's public API exposes kotlinx.io types (Source/Buffer/Path/...),
+        // so Swift Export generates a kotlinx-io bridge that touches @InternalIoApi
+        // members (e.g. Buffer.buffer). Opt in so compileSwiftExportMain* compiles.
+        "kotlinx.io.InternalIoApi",
     )
 
 // ============================================================================

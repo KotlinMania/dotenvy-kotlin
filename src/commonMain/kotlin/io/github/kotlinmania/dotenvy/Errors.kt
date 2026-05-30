@@ -1,7 +1,10 @@
+@file:OptIn(kotlin.experimental.ExperimentalObjCRefinement::class)
 // port-lint: source src/errors.rs
+
 package io.github.kotlinmania.dotenvy
 
 import kotlinx.io.IOException
+import kotlin.native.HiddenFromObjC
 
 /**
  * The result type used by all fallible dotenvy operations. The error case carries an [Error]
@@ -25,6 +28,7 @@ public enum class IoErrorKind {
  * `std::io::Error` in the upstream crate so that callers can distinguish [IoErrorKind.NotFound]
  * the same way they would in Rust.
  */
+@HiddenFromObjC
 public open class IoError(
     public val kind: IoErrorKind,
     message: String,
@@ -36,6 +40,7 @@ public open class IoError(
  * The [NotUnicode] variant is preserved for parity even though Kotlin strings are always
  * Unicode; native bridges that decode platform-specific strings may choose to emit it.
  */
+@HiddenFromObjC
 public sealed class EnvVarError(
     message: String,
 ) : RuntimeException(message) {
@@ -55,6 +60,7 @@ public sealed class EnvVarError(
  * preserving the same three variants. The Rust type carries a `non_exhaustive` attribute, so
  * additional subclasses may be introduced without breaking source compatibility.
  */
+@HiddenFromObjC
 public sealed class Error(
     message: String,
     cause: Throwable? = null,
