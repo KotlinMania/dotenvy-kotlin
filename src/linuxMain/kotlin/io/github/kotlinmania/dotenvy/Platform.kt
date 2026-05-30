@@ -14,14 +14,18 @@ import platform.posix.setenv
 
 internal actual fun envVar(name: String): String? = getenv(name)?.toKString()
 
-internal actual fun setEnvVar(name: String, value: String) {
+internal actual fun setEnvVar(
+    name: String,
+    value: String,
+) {
     setenv(name, value, 1)
 }
 
 internal actual fun envVars(): List<Pair<String, String>> = emptyList()
 
-internal actual fun currentDirectory(): String? = memScoped {
-    val size = 4096
-    val buf = allocArray<ByteVar>(size)
-    if (getcwd(buf, size.toULong()) == null) null else buf.toKString()
-}
+internal actual fun currentDirectory(): String? =
+    memScoped {
+        val size = 4096
+        val buf = allocArray<ByteVar>(size)
+        if (getcwd(buf, size.toULong()) == null) null else buf.toKString()
+    }

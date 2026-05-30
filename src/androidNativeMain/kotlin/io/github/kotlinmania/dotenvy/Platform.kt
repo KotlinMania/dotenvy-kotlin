@@ -10,7 +10,10 @@ import platform.posix.setenv
 
 internal actual fun envVar(name: String): String? = getenv(name)?.toKString()
 
-internal actual fun setEnvVar(name: String, value: String) {
+internal actual fun setEnvVar(
+    name: String,
+    value: String,
+) {
     setenv(name, value, 1)
 }
 

@@ -6,7 +6,10 @@ internal actual fun envVar(name: String): String? {
     return if (raw == null || raw == undefined()) null else raw.unsafeCast<String>()
 }
 
-internal actual fun setEnvVar(name: String, value: String) {
+internal actual fun setEnvVar(
+    name: String,
+    value: String,
+) {
     jsSetEnv(name, value)
 }
 
@@ -29,20 +32,27 @@ internal actual fun currentDirectory(): String? {
     return if (raw == null || raw == undefined()) null else raw.unsafeCast<String>()
 }
 
-private fun jsGetEnv(name: String): dynamic = js(
-    "(typeof process !== 'undefined' && process && process.env) ? process.env[name] : undefined",
-)
+private fun jsGetEnv(name: String): dynamic =
+    js(
+        "(typeof process !== 'undefined' && process && process.env) ? process.env[name] : undefined",
+    )
 
-private fun jsSetEnv(name: String, value: String): Unit = js(
-    "if (typeof process !== 'undefined' && process && process.env) { process.env[name] = value; }",
-)
+private fun jsSetEnv(
+    name: String,
+    value: String,
+): Unit =
+    js(
+        "if (typeof process !== 'undefined' && process && process.env) { process.env[name] = value; }",
+    )
 
-private fun jsEnvKeys(): dynamic = js(
-    "(typeof process !== 'undefined' && process && process.env) ? Object.keys(process.env) : []",
-)
+private fun jsEnvKeys(): dynamic =
+    js(
+        "(typeof process !== 'undefined' && process && process.env) ? Object.keys(process.env) : []",
+    )
 
-private fun jsCwd(): dynamic = js(
-    "(typeof process !== 'undefined' && process && typeof process.cwd === 'function') ? process.cwd() : undefined",
-)
+private fun jsCwd(): dynamic =
+    js(
+        "(typeof process !== 'undefined' && process && typeof process.cwd === 'function') ? process.cwd() : undefined",
+    )
 
 private fun undefined(): dynamic = js("undefined")

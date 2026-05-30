@@ -3,10 +3,10 @@ package io.github.kotlinmania.dotenvy
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.test.assertFalse
 
 class ErrorsTest {
     @Test

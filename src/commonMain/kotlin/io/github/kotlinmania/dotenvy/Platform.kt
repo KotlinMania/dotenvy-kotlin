@@ -14,7 +14,10 @@ internal expect fun envVar(name: String): String?
  * and browser-hosted Kotlin), this call is a no-op or affects only an in-process overlay,
  * see the per-target actual for behavior details.
  */
-internal expect fun setEnvVar(name: String, value: String)
+internal expect fun setEnvVar(
+    name: String,
+    value: String,
+)
 
 /** Returns a snapshot of the process environment as a list of (key, value) pairs. */
 internal expect fun envVars(): List<Pair<String, String>>
