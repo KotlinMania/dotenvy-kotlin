@@ -23,42 +23,43 @@ private fun collectAll(iter: Iter): List<Result<Pair<String, String>>> {
 }
 
 class ParseLineTest {
-
     @Test
     fun testParseLineEnv() {
         // Note 5 spaces after 'KEY8=' below
-        val input = "\n" +
-            "KEY=1\n" +
-            "KEY2=\"2\"\n" +
-            "KEY3='3'\n" +
-            "KEY4='fo ur'\n" +
-            "KEY5=\"fi ve\"\n" +
-            "KEY6=s\\ ix\n" +
-            "KEY7=\n" +
-            "KEY8=     \n" +
-            "KEY9=   # foo\n" +
-            "KEY10  =\"whitespace before =\"\n" +
-            "KEY11=    \"whitespace after =\"\n" +
-            "export=\"export as key\"\n" +
-            "export   SHELL_LOVER=1\n"
+        val input =
+            "\n" +
+                "KEY=1\n" +
+                "KEY2=\"2\"\n" +
+                "KEY3='3'\n" +
+                "KEY4='fo ur'\n" +
+                "KEY5=\"fi ve\"\n" +
+                "KEY6=s\\ ix\n" +
+                "KEY7=\n" +
+                "KEY8=     \n" +
+                "KEY9=   # foo\n" +
+                "KEY10  =\"whitespace before =\"\n" +
+                "KEY11=    \"whitespace after =\"\n" +
+                "export=\"export as key\"\n" +
+                "export   SHELL_LOVER=1\n"
 
         val actualIter = iterFromString(input)
 
-        val expected = listOf(
-            "KEY" to "1",
-            "KEY2" to "2",
-            "KEY3" to "3",
-            "KEY4" to "fo ur",
-            "KEY5" to "fi ve",
-            "KEY6" to "s ix",
-            "KEY7" to "",
-            "KEY8" to "",
-            "KEY9" to "",
-            "KEY10" to "whitespace before =",
-            "KEY11" to "whitespace after =",
-            "export" to "export as key",
-            "SHELL_LOVER" to "1",
-        )
+        val expected =
+            listOf(
+                "KEY" to "1",
+                "KEY2" to "2",
+                "KEY3" to "3",
+                "KEY4" to "fo ur",
+                "KEY5" to "fi ve",
+                "KEY6" to "s ix",
+                "KEY7" to "",
+                "KEY8" to "",
+                "KEY9" to "",
+                "KEY10" to "whitespace before =",
+                "KEY11" to "whitespace after =",
+                "export" to "export as key",
+                "SHELL_LOVER" to "1",
+            )
 
         var count = 0
         val actuals = collectAll(actualIter)
@@ -73,24 +74,27 @@ class ParseLineTest {
 
     @Test
     fun testParseLineComment() {
-        val input = "\n" +
-            "# foo=bar\n" +
-            "#    "
+        val input =
+            "\n" +
+                "# foo=bar\n" +
+                "#    "
         val actuals = collectAll(iterFromString(input))
         // empty input followed by comment-only lines should yield no parse results
-        val nonEmptyResults = actuals.filter { result ->
-            result.isFailure || result.getOrThrow().first.isNotEmpty()
-        }
+        val nonEmptyResults =
+            actuals.filter { result ->
+                result.isFailure || result.getOrThrow().first.isNotEmpty()
+            }
         assertTrue(nonEmptyResults.isEmpty(), "expected no non-empty results, got $nonEmptyResults")
     }
 
     @Test
     fun testParseLineInvalid() {
         // Note 4 spaces after 'invalid' below
-        val input = "\n" +
-            "  invalid    \n" +
-            "very bacon = yes indeed\n" +
-            "=value"
+        val input =
+            "\n" +
+                "  invalid    \n" +
+                "very bacon = yes indeed\n" +
+                "=value"
         val actuals = collectAll(iterFromString(input))
 
         var count = 0
@@ -103,26 +107,28 @@ class ParseLineTest {
 
     @Test
     fun testParseValueEscapes() {
-        val input = "\n" +
-            "KEY=my\\ cool\\ value\n" +
-            "KEY2=\\\$sweet\n" +
-            "KEY3=\"awesome stuff \\\"mang\\\"\"\n" +
-            "KEY4='sweet \$\\fgs'\\''fds'\n" +
-            "KEY5=\"'\\\"yay\\\\\"\\ \"stuff\"\n" +
-            "KEY6=\"lol\" #well you see when I say lol wh\n" +
-            "KEY7=\"line 1\\nline 2\"\n"
+        val input =
+            "\n" +
+                "KEY=my\\ cool\\ value\n" +
+                "KEY2=\\\$sweet\n" +
+                "KEY3=\"awesome stuff \\\"mang\\\"\"\n" +
+                "KEY4='sweet \$\\fgs'\\''fds'\n" +
+                "KEY5=\"'\\\"yay\\\\\"\\ \"stuff\"\n" +
+                "KEY6=\"lol\" #well you see when I say lol wh\n" +
+                "KEY7=\"line 1\\nline 2\"\n"
 
         val actuals = collectAll(iterFromString(input))
 
-        val expected = listOf(
-            "KEY" to "my cool value",
-            "KEY2" to "\$sweet",
-            "KEY3" to "awesome stuff \"mang\"",
-            "KEY4" to "sweet \$\\fgs'fds",
-            "KEY5" to "'\"yay\\ stuff",
-            "KEY6" to "lol",
-            "KEY7" to "line 1\nline 2",
-        )
+        val expected =
+            listOf(
+                "KEY" to "my cool value",
+                "KEY2" to "\$sweet",
+                "KEY3" to "awesome stuff \"mang\"",
+                "KEY4" to "sweet \$\\fgs'fds",
+                "KEY5" to "'\"yay\\ stuff",
+                "KEY6" to "lol",
+                "KEY7" to "line 1\nline 2",
+            )
 
         for ((expectedItem, actual) in expected.zip(actuals)) {
             assertTrue(actual.isSuccess, "expected success but got $actual")
@@ -132,11 +138,12 @@ class ParseLineTest {
 
     @Test
     fun testParseValueEscapesInvalid() {
-        val input = "\n" +
-            "KEY=my uncool value\n" +
-            "KEY2=\"why\n" +
-            "KEY3='please stop''\n" +
-            "KEY4=h\\8u\n"
+        val input =
+            "\n" +
+                "KEY=my uncool value\n" +
+                "KEY2=\"why\n" +
+                "KEY3='please stop''\n" +
+                "KEY4=h\\8u\n"
 
         val actuals = collectAll(iterFromString(input))
         for (actual in actuals) {
@@ -146,8 +153,10 @@ class ParseLineTest {
 }
 
 class VariableSubstitutionTest {
-
-    private fun assertParsedString(input: String, expected: List<Pair<String, String>>) {
+    private fun assertParsedString(
+        input: String,
+        expected: List<Pair<String, String>>,
+    ) {
         val actuals = collectAll(iterFromString(input))
         val expectedCount = expected.size
 
@@ -260,14 +269,14 @@ class VariableSubstitutionTest {
 }
 
 class ParseErrorTest {
-
     @Test
     fun shouldNotParseUnfinishedSubstitutions() {
         val wrongValue = ">\${KEY{<"
 
-        val parsedValues = collectAll(
-            iterFromString("\n    KEY=VALUE\n    KEY1=$wrongValue\n    ")
-        )
+        val parsedValues =
+            collectAll(
+                iterFromString("\n    KEY=VALUE\n    KEY1=$wrongValue\n    "),
+            )
 
         assertEquals(2, parsedValues.size)
 

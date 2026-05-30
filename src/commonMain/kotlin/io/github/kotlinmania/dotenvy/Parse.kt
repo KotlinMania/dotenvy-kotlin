@@ -68,9 +68,11 @@ private class LineParser(
         if (line.isEmpty() || !(line[0].isAsciiAlphabetic() || line[0] == '_')) {
             return Result.failure(err())
         }
-        val index = line.indexOfFirst { c ->
-            !(c.isAsciiAlphanumeric() || c == '_' || c == '.')
-        }.let { if (it < 0) line.length else it }
+        val index =
+            line
+                .indexOfFirst { c ->
+                    !(c.isAsciiAlphanumeric() || c == '_' || c == '.')
+                }.let { if (it < 0) line.length else it }
         pos += index
         val key = line.substring(0, index)
         line = line.substring(index)
@@ -113,17 +115,17 @@ private fun parseValue(
     var escaped = false
     var expectingEnd = false
 
-    //FIXME can this be done without yet another allocation per line?
+    // FIXME can this be done without yet another allocation per line?
     val output = StringBuilder()
 
     var substitutionMode = SubstitutionMode.None
     val substitutionName = StringBuilder()
 
     for ((index, c) in input.withIndex()) {
-        //the regex _should_ already trim whitespace off the end
-        //expectingEnd is meant to permit: k=v #comment
-        //without affecting: k=v#comment
-        //and throwing on: k=v w
+        // the regex _should_ already trim whitespace off the end
+        // expectingEnd is meant to permit: k=v #comment
+        // without affecting: k=v#comment
+        // and throwing on: k=v w
         if (expectingEnd) {
             if (c == ' ' || c == '\t') {
                 continue
@@ -133,10 +135,10 @@ private fun parseValue(
                 return Result.failure(Error.LineParse(input, index))
             }
         } else if (escaped) {
-            //TODO I tried handling literal \r but various issues
-            //imo not worth worrying about until there's a use case
-            //(actually handling backslash 0x10 would be a whole other matter)
-            //then there's \v \f bell hex... etc
+            // TODO I tried handling literal \r but various issues
+            // imo not worth worrying about until there's a use case
+            // (actually handling backslash 0x10 would be a whole other matter)
+            // then there's \v \f bell hex... etc
             when (c) {
                 '\\', '\'', '"', '$', ' ' -> output.append(c)
                 'n' -> output.append('\n') // handle \n case
@@ -168,11 +170,12 @@ private fun parseValue(
                                 output,
                             )
                             if (c == '$') {
-                                substitutionMode = if (!strongQuote && !escaped) {
-                                    SubstitutionMode.Block
-                                } else {
-                                    SubstitutionMode.None
-                                }
+                                substitutionMode =
+                                    if (!strongQuote && !escaped) {
+                                        SubstitutionMode.Block
+                                    } else {
+                                        SubstitutionMode.None
+                                    }
                             } else {
                                 substitutionMode = SubstitutionMode.None
                                 output.append(c)
@@ -194,11 +197,12 @@ private fun parseValue(
                 }
             }
         } else if (c == '$') {
-            substitutionMode = if (!strongQuote && !escaped) {
-                SubstitutionMode.Block
-            } else {
-                SubstitutionMode.None
-            }
+            substitutionMode =
+                if (!strongQuote && !escaped) {
+                    SubstitutionMode.Block
+                } else {
+                    SubstitutionMode.None
+                }
         } else if (weakQuote) {
             if (c == '"') {
                 weakQuote = false
@@ -220,13 +224,15 @@ private fun parseValue(
         }
     }
 
-    //XXX also fail if escaped? or...
+    // XXX also fail if escaped? or...
     return if (substitutionMode == SubstitutionMode.EscapedBlock || strongQuote || weakQuote) {
         val valueLength = input.length
-        Result.failure(Error.LineParse(
-            input,
-            if (valueLength == 0) 0 else valueLength - 1,
-        ))
+        Result.failure(
+            Error.LineParse(
+                input,
+                if (valueLength == 0) 0 else valueLength - 1,
+            ),
+        )
     } else {
         applySubstitution(
             substitutionData,
@@ -259,8 +265,7 @@ private fun drainToString(buffer: StringBuilder): String {
 
 private fun Char.isAsciiAlphabetic(): Boolean = this in 'A'..'Z' || this in 'a'..'z'
 
-private fun Char.isAsciiAlphanumeric(): Boolean =
-    this in 'A'..'Z' || this in 'a'..'z' || this in '0'..'9'
+private fun Char.isAsciiAlphanumeric(): Boolean = this in 'A'..'Z' || this in 'a'..'z' || this in '0'..'9'
 
 // Mirrors Rust's `char::is_alphanumeric` (Unicode-aware), used for substitution-name characters.
 private fun Char.isAlphaNumericUnicode(): Boolean = isLetterOrDigit()

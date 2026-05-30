@@ -37,8 +37,9 @@ private fun ensureStarted(): Unit = startOnce
  */
 public fun `var`(key: String): Result<String> {
     ensureStarted()
-    val value = envVar(key)
-        ?: return Result.failure(Error.EnvVar(EnvVarError.NotPresent))
+    val value =
+        envVar(key)
+            ?: return Result.failure(Error.EnvVar(EnvVarError.NotPresent))
     return Result.success(value)
 }
 
@@ -185,8 +186,7 @@ public fun fromFilenameOverride(filename: Path): Result<Path> {
 }
 
 /** Convenience overload accepting the filename as a [String]. */
-public fun fromFilenameOverride(filename: String): Result<Path> =
-    fromFilenameOverride(Path(filename))
+public fun fromFilenameOverride(filename: String): Result<Path> = fromFilenameOverride(Path(filename))
 
 /**
  * Returns an iterator over environment variables from the specified file.
@@ -320,10 +320,9 @@ public fun dotenvIter(): Result<Iter> {
     return Result.success(iter)
 }
 
-private fun openIter(path: Path): Result<Iter> {
-    return try {
+private fun openIter(path: Path): Result<Iter> =
+    try {
         Result.success(Iter(SystemFileSystem.source(path).buffered()))
     } catch (e: IOException) {
         Result.failure(Error.Io(toIoError(e)))
     }
-}

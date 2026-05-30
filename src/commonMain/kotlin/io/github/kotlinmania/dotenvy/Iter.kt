@@ -13,9 +13,9 @@ import kotlinx.io.readString
  * dotenv-style content. Mirrors the upstream `pub struct Iter<R>`; the type parameter is
  * elided because Kotlin source consumers all flow through a [kotlinx.io.Source].
  */
-public class Iter internal constructor(private val source: Source) :
-    Iterator<Result<Pair<String, String>>> {
-
+public class Iter internal constructor(
+    private val source: Source,
+) : Iterator<Result<Pair<String, String>>> {
     private val lines: QuotedLines = QuotedLines(source)
     private val substitutionData: MutableMap<String, String?> = mutableMapOf()
 
@@ -69,8 +69,8 @@ public class Iter internal constructor(private val source: Source) :
         return Result.success(Unit)
     }
 
-    private fun removeBom(): Result<Unit> {
-        return try {
+    private fun removeBom(): Result<Unit> =
+        try {
             if (source.request(3)) {
                 val peeked = source.peek().buffered()
                 val first = peeked.readByte()
@@ -86,7 +86,6 @@ public class Iter internal constructor(private val source: Source) :
         } catch (e: IOException) {
             Result.failure(Error.Io(toIoError(e)))
         }
-    }
 
     override fun hasNext(): Boolean {
         if (ended) return false
@@ -121,7 +120,9 @@ public class Iter internal constructor(private val source: Source) :
     }
 }
 
-private class QuotedLines(private val buf: Source) {
+private class QuotedLines(
+    private val buf: Source,
+) {
     fun next(): Result<String>? {
         val builder = StringBuilder()
         var curState: ParseState = ParseState.Complete
@@ -169,7 +170,8 @@ private class QuotedLines(private val buf: Source) {
                 ParseState.StrongOpenEscape,
                 ParseState.WeakOpen,
                 ParseState.WeakOpenEscape,
-                ParseState.WhiteSpace -> {
+                ParseState.WhiteSpace,
+                -> {
                     // continue reading more lines
                 }
             }
@@ -188,43 +190,51 @@ private enum class ParseState {
     WhiteSpace,
 }
 
-private fun evalEndState(prevState: ParseState, buf: String): Pair<Int, ParseState> {
+private fun evalEndState(
+    prevState: ParseState,
+    buf: String,
+): Pair<Int, ParseState> {
     var curState = prevState
     var curPos = 0
 
     for ((pos, c) in buf.withIndex()) {
         curPos = pos
-        curState = when (curState) {
-            ParseState.WhiteSpace -> when (c) {
-                '#' -> return curPos to ParseState.Comment
-                '\\' -> ParseState.Escape
-                '"' -> ParseState.WeakOpen
-                '\'' -> ParseState.StrongOpen
-                else -> ParseState.Complete
+        curState =
+            when (curState) {
+                ParseState.WhiteSpace ->
+                    when (c) {
+                        '#' -> return curPos to ParseState.Comment
+                        '\\' -> ParseState.Escape
+                        '"' -> ParseState.WeakOpen
+                        '\'' -> ParseState.StrongOpen
+                        else -> ParseState.Complete
+                    }
+                ParseState.Escape -> ParseState.Complete
+                ParseState.Complete ->
+                    when {
+                        c.isWhitespace() && c != '\n' && c != '\r' -> ParseState.WhiteSpace
+                        c == '\\' -> ParseState.Escape
+                        c == '"' -> ParseState.WeakOpen
+                        c == '\'' -> ParseState.StrongOpen
+                        else -> ParseState.Complete
+                    }
+                ParseState.WeakOpen ->
+                    when (c) {
+                        '\\' -> ParseState.WeakOpenEscape
+                        '"' -> ParseState.Complete
+                        else -> ParseState.WeakOpen
+                    }
+                ParseState.WeakOpenEscape -> ParseState.WeakOpen
+                ParseState.StrongOpen ->
+                    when (c) {
+                        '\\' -> ParseState.StrongOpenEscape
+                        '\'' -> ParseState.Complete
+                        else -> ParseState.StrongOpen
+                    }
+                ParseState.StrongOpenEscape -> ParseState.StrongOpen
+                // Comments last the entire line.
+                ParseState.Comment -> error("should have returned early")
             }
-            ParseState.Escape -> ParseState.Complete
-            ParseState.Complete -> when {
-                c.isWhitespace() && c != '\n' && c != '\r' -> ParseState.WhiteSpace
-                c == '\\' -> ParseState.Escape
-                c == '"' -> ParseState.WeakOpen
-                c == '\'' -> ParseState.StrongOpen
-                else -> ParseState.Complete
-            }
-            ParseState.WeakOpen -> when (c) {
-                '\\' -> ParseState.WeakOpenEscape
-                '"' -> ParseState.Complete
-                else -> ParseState.WeakOpen
-            }
-            ParseState.WeakOpenEscape -> ParseState.WeakOpen
-            ParseState.StrongOpen -> when (c) {
-                '\\' -> ParseState.StrongOpenEscape
-                '\'' -> ParseState.Complete
-                else -> ParseState.StrongOpen
-            }
-            ParseState.StrongOpenEscape -> ParseState.StrongOpen
-            // Comments last the entire line.
-            ParseState.Comment -> error("should have returned early")
-        }
     }
     return curPos to curState
 }
@@ -234,16 +244,20 @@ private fun evalEndState(prevState: ParseState, buf: String): Pair<Int, ParseSta
  * decoded text to [into]. Returns the number of characters appended; a return value of zero
  * indicates end-of-stream and mirrors `BufRead::read_line` returning `Ok(0)`.
  */
-private fun readLineInto(source: Source, into: StringBuilder): Result<Int> {
+private fun readLineInto(
+    source: Source,
+    into: StringBuilder,
+): Result<Int> {
     return try {
         if (source.exhausted()) return Result.success(0)
         val nlByte = '\n'.code.toByte()
         val nlIndex = source.indexOf(nlByte)
-        val text = if (nlIndex == -1L) {
-            source.readString()
-        } else {
-            source.readString(nlIndex + 1)
-        }
+        val text =
+            if (nlIndex == -1L) {
+                source.readString()
+            } else {
+                source.readString(nlIndex + 1)
+            }
         into.append(text)
         Result.success(text.length)
     } catch (e: IOException) {
@@ -251,8 +265,9 @@ private fun readLineInto(source: Source, into: StringBuilder): Result<Int> {
     }
 }
 
-internal fun toIoError(e: Throwable): IoError = when (e) {
-    is IoError -> e
-    is IOException -> IoError(IoErrorKind.Other, e.message ?: "io error", e)
-    else -> IoError(IoErrorKind.Other, e.message ?: "io error", e)
-}
+internal fun toIoError(e: Throwable): IoError =
+    when (e) {
+        is IoError -> e
+        is IOException -> IoError(IoErrorKind.Other, e.message ?: "io error", e)
+        else -> IoError(IoErrorKind.Other, e.message ?: "io error", e)
+    }

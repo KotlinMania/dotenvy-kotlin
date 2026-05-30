@@ -3,7 +3,10 @@ package io.github.kotlinmania.dotenvy
 
 internal actual fun envVar(name: String): String? = null
 
-internal actual fun setEnvVar(name: String, value: String) {
+internal actual fun setEnvVar(
+    name: String,
+    value: String,
+) {
     // intentionally empty
 }
 
