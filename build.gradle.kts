@@ -253,6 +253,7 @@ kotlin {
         optIn.addAll(commonOptIns)
         freeCompilerArgs.add("-Xexpect-actual-classes")
         freeCompilerArgs.add("-Xsuppress-version-warnings")
+        freeCompilerArgs.add("-opt-in=kotlinx.io.InternalIoApi")
     }
 
     val xcf = XCFramework(frameworkName)
