@@ -26,15 +26,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v6.1.0
 
       - name: Build and test iOS targets + XCFramework
-        # The XCFramework name is derived per-repo from project.frameworkName
-        # in gradle.properties. The parameterized build declares
-        # XCFramework(frameworkName), so there is no string literal to grep in
-        # build.gradle.kts; gradle.properties is the single source of truth and
-        # keeps this workflow portable across the kotlinmania workspace.
+        # build.gradle.kts registers the XCFramework as XCFramework(frameworkName),
+        # where frameworkName = project.frameworkName from gradle.properties. That
+        # property is the single source of truth for the assemble<Name>XCFramework
+        # task name — read it directly; there is no XCFramework("<literal>") to grep.
         run: |
-          XCF_NAME=$(grep -m1 -oE '^project\.frameworkName=.+' gradle.properties | sed 's/^project\.frameworkName=//' | tr -d '[:space:]')
+          XCF_NAME=$(grep -E '^project\.frameworkName=' gradle.properties | head -1 | cut -d= -f2 | tr -d '[:space:]')
           if [ -z "$XCF_NAME" ]; then
-            echo "::error::project.frameworkName not set in gradle.properties"
+            echo "::error::project.frameworkName is not set in gradle.properties"
             exit 1
           fi
           echo "XCFramework name: $XCF_NAME → task: assemble${XCF_NAME}XCFramework"
