@@ -1,4 +1,4 @@
-// port-lint: source src/errors.rs
+// port-lint: tests errors.rs
 package io.github.kotlinmania.dotenvy
 
 import kotlin.test.Test

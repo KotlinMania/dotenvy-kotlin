@@ -1,4 +1,3 @@
-// port-lint: ignore (Wasm-JS / Node implementation of env/cwd shims for src/lib.rs and src/find.rs)
 @file:OptIn(kotlin.js.ExperimentalWasmJsInterop::class)
 
 package io.github.kotlinmania.dotenvy

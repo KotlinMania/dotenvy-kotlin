@@ -1,4 +1,4 @@
-// port-lint: source src/lib.rs
+// port-lint: source lib.rs
 // dotenv: https://crates.io/crates/dotenv
 // A well-maintained fork of the dotenv crate.
 //

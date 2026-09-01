@@ -1,5 +1,5 @@
 @file:OptIn(kotlin.experimental.ExperimentalObjCRefinement::class)
-// port-lint: source src/errors.rs
+// port-lint: source errors.rs
 
 package io.github.kotlinmania.dotenvy
 
@@ -14,8 +14,7 @@ import kotlin.native.HiddenFromObjC
 public typealias Result<T> = kotlin.Result<T>
 
 /**
- * Categories of I/O failure that dotenvy distinguishes. Mirrors the subset of `io::ErrorKind`
- * that the upstream crate observes on the matched paths.
+ * Categories of I/O failure that dotenvy distinguishes.
  */
 public enum class IoErrorKind {
     NotFound,
@@ -24,9 +23,8 @@ public enum class IoErrorKind {
 }
 
 /**
- * A platform-neutral I/O error that carries an [IoErrorKind] tag. This stands in for
- * `std::io::Error` in the upstream crate so that callers can distinguish [IoErrorKind.NotFound]
- * the same way they would in Rust.
+ * A platform-neutral I/O error that carries an [IoErrorKind] tag so that callers can
+ * distinguish [IoErrorKind.NotFound].
  */
 @HiddenFromObjC
 public open class IoError(
@@ -36,9 +34,7 @@ public open class IoError(
 ) : IOException(message, cause)
 
 /**
- * Variants describing why looking up an environment variable failed. Mirrors `env::VarError`.
- * The [NotUnicode] variant is preserved for parity even though Kotlin strings are always
- * Unicode; native bridges that decode platform-specific strings may choose to emit it.
+ * Variants describing why looking up an environment variable failed.
  */
 @HiddenFromObjC
 public sealed class EnvVarError(
@@ -56,9 +52,7 @@ public sealed class EnvVarError(
 }
 
 /**
- * The error type produced by dotenvy. This is a sealed translation of the upstream `enum Error`,
- * preserving the same three variants. The Rust type carries a `non_exhaustive` attribute, so
- * additional subclasses may be introduced without breaking source compatibility.
+ * The error type produced by dotenvy.
  */
 @HiddenFromObjC
 public sealed class Error(

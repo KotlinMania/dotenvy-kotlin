@@ -1,4 +1,4 @@
-// port-lint: source src/iter.rs
+// port-lint: source iter.rs
 package io.github.kotlinmania.dotenvy
 
 import kotlinx.io.IOException
@@ -10,8 +10,7 @@ import kotlinx.io.readString
 
 /**
  * An iterator yielding `(key, value)` pairs parsed from a buffered byte stream that contains
- * dotenv-style content. Mirrors the upstream `pub struct Iter<R>`; the type parameter is
- * elided because Kotlin source consumers all flow through a [kotlinx.io.Source].
+ * dotenv-style content.
  */
 public class Iter internal constructor(
     private val source: Source,
@@ -22,7 +21,7 @@ public class Iter internal constructor(
     private var nextItem: Result<Pair<String, String>>? = null
     private var ended: Boolean = false
 
-    /** Mirrors `Iter::new(reader)`. Wraps an unbuffered [RawSource] in a buffered view. */
+    /** Wraps an unbuffered [RawSource] in a buffered view. */
     public constructor(reader: RawSource) : this(reader.buffered())
 
     /**
@@ -242,7 +241,7 @@ private fun evalEndState(
 /**
  * Reads characters from [source] up to and including the next line-feed (or EOF), appending the
  * decoded text to [into]. Returns the number of characters appended; a return value of zero
- * indicates end-of-stream and mirrors `BufRead::read_line` returning `Ok(0)`.
+ * indicates end-of-stream.
  */
 private fun readLineInto(
     source: Source,

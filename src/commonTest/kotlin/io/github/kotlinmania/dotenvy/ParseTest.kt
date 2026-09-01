@@ -1,4 +1,4 @@
-// port-lint: source src/parse.rs
+// port-lint: tests parse.rs
 package io.github.kotlinmania.dotenvy
 
 import kotlinx.io.Buffer
@@ -25,7 +25,7 @@ private fun collectAll(iter: Iter): List<Result<Pair<String, String>>> {
 class ParseLineTest {
     @Test
     fun testParseLineEnv() {
-        // Note 5 spaces after 'KEY8=' below
+        // Note 5 spaces after KEY8= below
         val input =
             "\n" +
                 "KEY=1\n" +
@@ -89,7 +89,7 @@ class ParseLineTest {
 
     @Test
     fun testParseLineInvalid() {
-        // Note 4 spaces after 'invalid' below
+        // Note 4 spaces after invalid below
         val input =
             "\n" +
                 "  invalid    \n" +
@@ -246,6 +246,9 @@ class VariableSubstitutionTest {
             ),
         )
     }
+
+    // substitute_variable_from_env_variable: unported because KMP common targets (such as JVM System.getenv()) cannot mutate process environment variables at runtime
+    // substitute_variable_env_variable_overrides_dotenv_in_substitution: unported because KMP common targets cannot mutate process environment variables at runtime
 
     @Test
     fun consequentSubstitutions() {
