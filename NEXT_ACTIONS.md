@@ -5,13 +5,13 @@ Based on AST analysis, here are the concrete next steps.
 ## Summary
 
 - **Files Present:** 5/6 (83.3%)
-- **Function parity:** 57/67 matched (target 77) — 85.1%
+- **Function parity:** 59/67 matched (target 79) — 88.1%
 - **Class/type parity:** 9/10 matched (target 21) — 90.0%
-- **Combined symbol parity:** 66/77 matched (target 98) — 85.7%
-- **Average inline-code cosine:** 0.00 (function body across 3 matched files)
-- **Average documentation cosine:** 0.42 (doc text across 3 matched files)
-- **Cheat-zeroed Files:** 5
-- **Critical Issues:** 5 files with <0.60 function similarity
+- **Combined symbol parity:** 68/77 matched (target 100) — 88.3%
+- **Average inline-code cosine:** 0.59 (function body across 5 matched files)
+- **Average documentation cosine:** 0.44 (doc text across 5 matched files)
+- **Cheat-zeroed Files:** 0
+- **Critical Issues:** 2 files with <0.60 function similarity
 
 ## Priority 1: Fix Incomplete High-Dependency Files
 
@@ -29,79 +29,60 @@ Every matched file is listed below with function and type symbol parity.
 
 ### 1. iter
 
-- **Target:** `dotenvy.Iter [ZERO] [PROVENANCE-FALLBACK]`
-- **Similarity:** 0.00
+- **Target:** `dotenvy.Iter`
+- **Similarity:** 0.50
 - **Dependents:** 3
-- **Priority Score:** 3021010.0
+- **Priority Score:** 3021005.0
 - **Functions:** 5/6 matched (target 10)
 - **Missing functions:** `new`
 - **Types:** 3/4 matched (target 3)
 - **Missing types:** `Item`
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/iter.rs` vs expected `iter.rs`
-- **Proposed provenance header:** `// port-lint: source iter.rs` (current: `// port-lint: source src/iter.rs`)
-- **Lint issues:** 1
 
 ### 2. parse
 
-- **Target:** `dotenvy.Parse [STUB] [PROVENANCE-FALLBACK]`
-- **Similarity:** 0.00
+- **Target:** `dotenvy.Parse`
+- **Similarity:** 0.61
 - **Dependents:** 1
-- **Priority Score:** 1043410.0
-- **Functions:** 27/31 matched (target 35)
-- **Missing functions:** `new`, `assert_parsed_string`, `substitute_variable_from_env_variable`, `substitute_variable_env_variable_overrides_dotenv_in_substitution`
+- **Priority Score:** 1023403.9
+- **Functions:** 29/31 matched (target 37)
+- **Missing functions:** `new`, `assert_parsed_string`
 - **Types:** 3/3 matched (target 6)
 - **Missing types:** _none_
-- **Tests:** 20/23 matched
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/parse.rs` vs expected `parse.rs`
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/parse.rs` vs expected `parse.rs`
-- **Proposed provenance header:** `// port-lint: source parse.rs` (current: `// port-lint: source src/parse.rs`)
-- **Proposed provenance header:** `// port-lint: source parse.rs` (current: `// port-lint: source src/parse.rs`)
-- **Lint issues:** 2
+- **Tests:** 22/23 matched
 
 ### 3. lib
 
-- **Target:** `dotenvy.Lib [STUB] [PROVENANCE-FALLBACK]`
-- **Similarity:** 0.00
+- **Target:** `dotenvy.Lib`
+- **Similarity:** 0.61
 - **Dependents:** 0
-- **Priority Score:** 11410.0
+- **Priority Score:** 11403.9
 - **Functions:** 13/14 matched (target 19)
 - **Missing functions:** `var`
 - **Types:** 0/0 matched
 - **Missing types:** _none_
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/lib.rs` vs expected `lib.rs`
-- **Proposed provenance header:** `// port-lint: source lib.rs` (current: `// port-lint: source src/lib.rs`)
-- **Lint issues:** 1
 
 ### 4. errors
 
-- **Target:** `dotenvy.Errors [ZERO] [PROVENANCE-FALLBACK]`
-- **Similarity:** 0.00
+- **Target:** `dotenvy.Errors`
+- **Similarity:** 0.63
 - **Dependents:** 0
-- **Priority Score:** 11310.0
+- **Priority Score:** 11303.7
 - **Functions:** 10/11 matched (target 10)
 - **Missing functions:** `fmt`
 - **Types:** 2/2 matched (target 11)
 - **Missing types:** _none_
 - **Tests:** 8/8 matched
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/errors.rs` vs expected `errors.rs`
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/errors.rs` vs expected `errors.rs`
-- **Proposed provenance header:** `// port-lint: source errors.rs` (current: `// port-lint: source src/errors.rs`)
-- **Proposed provenance header:** `// port-lint: source errors.rs` (current: `// port-lint: source src/errors.rs`)
-- **Lint issues:** 2
 
 ### 5. find
 
-- **Target:** `dotenvy.Find [ZERO] [PROVENANCE-FALLBACK]`
-- **Similarity:** 0.00
+- **Target:** `dotenvy.Find`
+- **Similarity:** 0.58
 - **Dependents:** 0
-- **Priority Score:** 10410.0
+- **Priority Score:** 10404.2
 - **Functions:** 2/3 matched
 - **Missing functions:** `new`
 - **Types:** 1/1 matched
 - **Missing types:** _none_
-- **Provenance warning:** port-lint provenance header matched only after fallback normalization: `src/find.rs` vs expected `find.rs`
-- **Proposed provenance header:** `// port-lint: source find.rs` (current: `// port-lint: source src/find.rs`)
-- **Lint issues:** 1
 
 ## Success Criteria
 

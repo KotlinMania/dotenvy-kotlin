@@ -1,4 +1,3 @@
-// port-lint: ignore (Android Native POSIX implementation of env/cwd shims for src/lib.rs and src/find.rs)
 @file:OptIn(ExperimentalForeignApi::class)
 
 package io.github.kotlinmania.dotenvy

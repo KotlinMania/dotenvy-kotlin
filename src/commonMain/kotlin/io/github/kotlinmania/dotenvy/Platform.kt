@@ -1,4 +1,3 @@
-// port-lint: ignore (platform abstractions over std::env and std::env::current_dir for src/lib.rs and src/find.rs)
 package io.github.kotlinmania.dotenvy
 
 /**

@@ -1,4 +1,4 @@
-// port-lint: source src/find.rs
+// port-lint: source find.rs
 package io.github.kotlinmania.dotenvy
 
 import kotlinx.io.IOException
@@ -8,15 +8,15 @@ import kotlinx.io.files.SystemFileSystem
 
 /**
  * Builder that resolves a `.env`-style filename by walking from the current working directory
- * up through ancestor directories. Mirrors the upstream `pub struct Finder<'a>`.
+ * up through ancestor directories.
  */
 public class Finder internal constructor(
     private var filenamePath: Path,
 ) {
-    /** Mirrors `Finder::new()`, defaulting the filename to `.env`. */
+    /** Creates a new [Finder], defaulting the filename to `.env`. */
     public constructor() : this(Path(".env"))
 
-    /** Mirrors `Finder::filename(filename)` and returns `self` for chaining. */
+    /** Sets the filename to search for and returns this builder for chaining. */
     public fun filename(filename: Path): Finder {
         this.filenamePath = filename
         return this
@@ -25,7 +25,7 @@ public class Finder internal constructor(
     /**
      * Walks from the current directory up through its ancestors, returning the absolute path
      * to the first directory containing [filenamePath] together with an [Iter] over the
-     * file's contents. Mirrors the upstream `pub fn find(self) -> Result<(PathBuf, Iter<File>)>`.
+     * file's contents.
      */
     public fun find(): Result<Pair<Path, Iter>> {
         val cwdString =

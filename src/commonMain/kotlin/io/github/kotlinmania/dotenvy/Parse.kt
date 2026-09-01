@@ -1,4 +1,4 @@
-// port-lint: source src/parse.rs
+// port-lint: source parse.rs
 package io.github.kotlinmania.dotenvy
 
 // for readability's sake
@@ -115,7 +115,6 @@ private fun parseValue(
     var escaped = false
     var expectingEnd = false
 
-    // FIXME can this be done without yet another allocation per line?
     val output = StringBuilder()
 
     var substitutionMode = SubstitutionMode.None
@@ -135,10 +134,6 @@ private fun parseValue(
                 return Result.failure(Error.LineParse(input, index))
             }
         } else if (escaped) {
-            // TODO I tried handling literal \r but various issues
-            // imo not worth worrying about until there's a use case
-            // (actually handling backslash 0x10 would be a whole other matter)
-            // then there's \v \f bell hex... etc
             when (c) {
                 '\\', '\'', '"', '$', ' ' -> output.append(c)
                 'n' -> output.append('\n') // handle \n case
@@ -267,5 +262,5 @@ private fun Char.isAsciiAlphabetic(): Boolean = this in 'A'..'Z' || this in 'a'.
 
 private fun Char.isAsciiAlphanumeric(): Boolean = this in 'A'..'Z' || this in 'a'..'z' || this in '0'..'9'
 
-// Mirrors Rust's `char::is_alphanumeric` (Unicode-aware), used for substitution-name characters.
+// Unicode-aware alphanumeric check used for substitution-name characters.
 private fun Char.isAlphaNumericUnicode(): Boolean = isLetterOrDigit()
