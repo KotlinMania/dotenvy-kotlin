@@ -1,10 +1,6 @@
 # dotenvy-kotlin
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/allan2/dotenvy/HEAD/assets/dotenvy.png" alt="dotenvy logo" width="180" />
-</p>
-
-<p align="center">
   <strong>A modern, zero-overhead Kotlin Multiplatform port of Rust's <a href="https://github.com/allan2/dotenvy"><code>dotenvy</code></a>.</strong><br/>
   Loads environment variables from <code>.env</code> files across JVM, Android, iOS, macOS, watchOS, tvOS, Linux, Windows, Node.js, and WebAssembly (WasmJS &amp; WasmWASI).
 </p>
