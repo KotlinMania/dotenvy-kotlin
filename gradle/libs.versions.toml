@@ -14,7 +14,7 @@ clap-kotlin = "0.1.1"
 once-cell-kotlin = "0.1.1"
 tempfile-kotlin = "0.1.0"
 rand-kotlin = "0.1.0"
-libc-kotlin = "0.1.7"
+libc-kotlin = "0.1.8"
 windows-sys-kotlin = "0.1.1"
 
 [plugins]
