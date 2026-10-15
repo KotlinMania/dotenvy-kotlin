@@ -3,7 +3,7 @@
 
 package io.github.kotlinmania.dotenvy
 
-import kotlinx.io.IOException
+import io.github.kotlinmania.io.IOException
 import kotlin.native.HiddenFromObjC
 
 /**
@@ -105,4 +105,6 @@ public sealed class Error(
             is EnvVar -> varError
             is LineParse -> null
         }
+
+    public fun fmt(): String = message.orEmpty()
 }

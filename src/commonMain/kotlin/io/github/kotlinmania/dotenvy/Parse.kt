@@ -135,8 +135,15 @@ private fun parseValue(
             }
         } else if (escaped) {
             when (c) {
-                '\\', '\'', '"', '$', ' ' -> output.append(c)
-                'n' -> output.append('\n') // handle \n case
+                '\\', '\'', '"', '$', ' ' -> {
+                    output.append(c)
+                }
+
+                'n' -> {
+                    output.append('\n')
+                }
+
+                // handle \n case
                 else -> {
                     return Result.failure(Error.LineParse(input, index))
                 }
@@ -154,7 +161,10 @@ private fun parseValue(
                 substitutionName.append(c)
             } else {
                 when (substitutionMode) {
-                    SubstitutionMode.None -> error("unreachable")
+                    SubstitutionMode.None -> {
+                        error("unreachable")
+                    }
+
                     SubstitutionMode.Block -> {
                         if (c == '{' && substitutionName.isEmpty()) {
                             substitutionMode = SubstitutionMode.EscapedBlock
@@ -177,6 +187,7 @@ private fun parseValue(
                             }
                         }
                     }
+
                     SubstitutionMode.EscapedBlock -> {
                         if (c == '}') {
                             substitutionMode = SubstitutionMode.None
@@ -247,7 +258,7 @@ private fun applySubstitution(
     if (environmentValue != null) {
         output.append(environmentValue)
     } else {
-        val storedValue = substitutionData[substitutionName] ?: ""
+        val storedValue = substitutionData[substitutionName].orEmpty()
         output.append(storedValue)
     }
 }

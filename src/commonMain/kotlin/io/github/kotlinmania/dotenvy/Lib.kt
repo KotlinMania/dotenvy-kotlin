@@ -7,11 +7,11 @@
 
 package io.github.kotlinmania.dotenvy
 
-import kotlinx.io.IOException
-import kotlinx.io.RawSource
-import kotlinx.io.buffered
-import kotlinx.io.files.Path
-import kotlinx.io.files.SystemFileSystem
+import io.github.kotlinmania.io.IOException
+import io.github.kotlinmania.io.RawSource
+import io.github.kotlinmania.io.buffered
+import io.github.kotlinmania.io.files.Path
+import io.github.kotlinmania.io.files.SystemFileSystem
 
 private val startOnce: Unit by lazy {
     dotenv()
@@ -210,7 +210,7 @@ public fun fromFilenameIter(filename: Path): Result<Iter> {
 public fun fromFilenameIter(filename: String): Result<Iter> = fromFilenameIter(Path(filename))
 
 /**
- * Loads environment variables from a [kotlinx.io.RawSource].
+ * Loads environment variables from a [io.github.kotlinmania.io.RawSource].
  *
  * This is useful for loading environment variables from IPC or the network.
  *
@@ -233,7 +233,7 @@ public fun fromRead(reader: RawSource): Result<Unit> {
 }
 
 /**
- * Loads environment variables from a [kotlinx.io.RawSource],
+ * Loads environment variables from a [io.github.kotlinmania.io.RawSource],
  * overriding existing environment variables.
  *
  * This is useful for loading environment variables from IPC or the network.
@@ -255,7 +255,7 @@ public fun fromReadOverride(reader: RawSource): Result<Unit> {
 }
 
 /**
- * Returns an iterator over environment variables from a [kotlinx.io.RawSource].
+ * Returns an iterator over environment variables from a [io.github.kotlinmania.io.RawSource].
  */
 public fun fromReadIter(reader: RawSource): Iter = Iter(reader)
 
