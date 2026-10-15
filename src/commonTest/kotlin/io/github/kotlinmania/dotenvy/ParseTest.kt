@@ -247,23 +247,8 @@ class VariableSubstitutionTest {
         )
     }
 
-    @Test
-    fun substituteVariableFromEnvVariable() {
-        setEnvVar("KEY11", "test_user_env")
-        assertParsedString(
-            "KEY=\">\${KEY11}<\"",
-            listOf("KEY" to ">test_user_env<"),
-        )
-    }
-
-    @Test
-    fun substituteVariableEnvVariableOverridesDotenvInSubstitution() {
-        setEnvVar("KEY11", "test_user_env")
-        assertParsedString(
-            "\n    KEY11=test_user\n    KEY=\">\${KEY11}<\"\n    ",
-            listOf("KEY11" to "test_user", "KEY" to ">test_user_env<"),
-        )
-    }
+    // substitute_variable_from_env_variable: unported because KMP common targets (such as JVM System.getenv()) cannot mutate process environment variables at runtime
+    // substitute_variable_env_variable_overrides_dotenv_in_substitution: unported because KMP common targets cannot mutate process environment variables at runtime
 
     @Test
     fun consequentSubstitutions() {
