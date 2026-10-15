@@ -11,4 +11,5 @@ internal actual fun setEnvVar(
 
 internal actual fun envVars(): List<Pair<String, String>> = emptyList()
 
-internal actual fun currentDirectory(): String? = null
+// In standard WASI preview 1, the root preopened directory is typically mapped to ".".
+internal actual fun currentDirectory(): String? = "."

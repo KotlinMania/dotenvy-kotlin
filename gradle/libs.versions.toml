@@ -5,16 +5,21 @@ serialization = "1.11.0"
 datetime = "0.8.0"
 collectionsImmutable = "0.5.2"
 androidKmp = "9.4.1"
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+detekt = "2.0.0-alpha.6"
+ktlint = "14.2.0"
+ktlintEngine = "1.8.0"
 kotlinxBenchmark = "0.5.0"
-io = "0.9.1"
+kmIo = "0.1.5"
+clap-kotlin = "0.1.1"
+once-cell-kotlin = "0.1.1"
+tempfile-kotlin = "0.1.0"
+rand-kotlin = "0.1.0"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidKmp" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinxBenchmark" }
 kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
@@ -25,8 +30,12 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "collectionsImmutable" }
-kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "io" }
+km-io = { module = "io.github.kotlinmania:km-io", version.ref = "kmIo" }
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinxBenchmark" }
+clap-kotlin = { module = "io.github.kotlinmania:clap-kotlin", version.ref = "clap-kotlin" }
+once-cell-kotlin = { module = "io.github.kotlinmania:once-cell-kotlin", version.ref = "once-cell-kotlin" }
+tempfile-kotlin = { module = "io.github.kotlinmania:tempfile-kotlin", version.ref = "tempfile-kotlin" }
+rand-kotlin = { module = "io.github.kotlinmania:rand-kotlin", version.ref = "rand-kotlin" }
 
 [bundles]
 dotenvy-commonMain = [
@@ -35,5 +44,6 @@ dotenvy-commonMain = [
   "kotlinx-serialization-json",
   "kotlinx-datetime",
   "collections-immutable",
-  "kotlinx-io-core",
+  "km-io",
 ]
+

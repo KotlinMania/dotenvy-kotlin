@@ -1,12 +1,12 @@
 // port-lint: source iter.rs
 package io.github.kotlinmania.dotenvy
 
-import kotlinx.io.IOException
-import kotlinx.io.RawSource
-import kotlinx.io.Source
-import kotlinx.io.buffered
-import kotlinx.io.indexOf
-import kotlinx.io.readString
+import io.github.kotlinmania.io.IOException
+import io.github.kotlinmania.io.RawSource
+import io.github.kotlinmania.io.Source
+import io.github.kotlinmania.io.buffered
+import io.github.kotlinmania.io.indexOf
+import io.github.kotlinmania.io.readString
 
 /**
  * An iterator yielding `(key, value)` pairs parsed from a buffered byte stream that contains
@@ -32,8 +32,11 @@ public class Iter internal constructor(
      * then the first occurrence is applied.
      */
     public fun load(): Result<Unit> {
-        val bom = removeBom()
-        if (bom.isFailure) return Result.failure(bom.exceptionOrNull()!!)
+        if (!bomRemoved) {
+            val bom = removeBom()
+            if (bom.isFailure) return Result.failure(bom.exceptionOrNull()!!)
+            bomRemoved = true
+        }
 
         while (hasNext()) {
             val item = next()
@@ -55,8 +58,11 @@ public class Iter internal constructor(
      * then the last occurrence is applied.
      */
     public fun loadOverride(): Result<Unit> {
-        val bom = removeBom()
-        if (bom.isFailure) return Result.failure(bom.exceptionOrNull()!!)
+        if (!bomRemoved) {
+            val bom = removeBom()
+            if (bom.isFailure) return Result.failure(bom.exceptionOrNull()!!)
+            bomRemoved = true
+        }
 
         while (hasNext()) {
             val item = next()
@@ -86,6 +92,8 @@ public class Iter internal constructor(
             Result.failure(Error.Io(toIoError(e)))
         }
 
+    private var bomRemoved: Boolean = false
+
     override fun hasNext(): Boolean {
         if (ended) return false
         if (nextItem != null) return true
@@ -105,6 +113,11 @@ public class Iter internal constructor(
     }
 
     private fun computeNext(): Result<Pair<String, String>>? {
+        if (!bomRemoved) {
+            bomRemoved = true
+            val bom = removeBom()
+            if (bom.isFailure) return Result.failure(bom.exceptionOrNull()!!)
+        }
         while (true) {
             val rawLine = lines.next() ?: return null
             if (rawLine.isFailure) return Result.failure(rawLine.exceptionOrNull()!!)
@@ -134,7 +147,10 @@ private class QuotedLines(
             val n = readResult.getOrThrow()
             if (n == 0) {
                 return when (curState) {
-                    ParseState.Complete -> null
+                    ParseState.Complete -> {
+                        null
+                    }
+
                     else -> {
                         val len = builder.length
                         Result.failure(Error.LineParse(builder.toString(), len))
@@ -160,10 +176,12 @@ private class QuotedLines(
                     }
                     return Result.success(builder.toString())
                 }
+
                 ParseState.Comment -> {
                     builder.setLength(bufPos + curPos)
                     return Result.success(builder.toString())
                 }
+
                 ParseState.Escape,
                 ParseState.StrongOpen,
                 ParseState.StrongOpenEscape,
@@ -200,7 +218,7 @@ private fun evalEndState(
         curPos = pos
         curState =
             when (curState) {
-                ParseState.WhiteSpace ->
+                ParseState.WhiteSpace -> {
                     when (c) {
                         '#' -> return curPos to ParseState.Comment
                         '\\' -> ParseState.Escape
@@ -208,8 +226,13 @@ private fun evalEndState(
                         '\'' -> ParseState.StrongOpen
                         else -> ParseState.Complete
                     }
-                ParseState.Escape -> ParseState.Complete
-                ParseState.Complete ->
+                }
+
+                ParseState.Escape -> {
+                    ParseState.Complete
+                }
+
+                ParseState.Complete -> {
                     when {
                         c.isWhitespace() && c != '\n' && c != '\r' -> ParseState.WhiteSpace
                         c == '\\' -> ParseState.Escape
@@ -217,22 +240,36 @@ private fun evalEndState(
                         c == '\'' -> ParseState.StrongOpen
                         else -> ParseState.Complete
                     }
-                ParseState.WeakOpen ->
+                }
+
+                ParseState.WeakOpen -> {
                     when (c) {
                         '\\' -> ParseState.WeakOpenEscape
                         '"' -> ParseState.Complete
                         else -> ParseState.WeakOpen
                     }
-                ParseState.WeakOpenEscape -> ParseState.WeakOpen
-                ParseState.StrongOpen ->
+                }
+
+                ParseState.WeakOpenEscape -> {
+                    ParseState.WeakOpen
+                }
+
+                ParseState.StrongOpen -> {
                     when (c) {
                         '\\' -> ParseState.StrongOpenEscape
                         '\'' -> ParseState.Complete
                         else -> ParseState.StrongOpen
                     }
-                ParseState.StrongOpenEscape -> ParseState.StrongOpen
+                }
+
+                ParseState.StrongOpenEscape -> {
+                    ParseState.StrongOpen
+                }
+
                 // Comments last the entire line.
-                ParseState.Comment -> error("should have returned early")
+                ParseState.Comment -> {
+                    error("should have returned early")
+                }
             }
     }
     return curPos to curState

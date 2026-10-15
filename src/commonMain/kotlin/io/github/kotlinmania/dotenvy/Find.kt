@@ -1,10 +1,10 @@
 // port-lint: source find.rs
 package io.github.kotlinmania.dotenvy
 
-import kotlinx.io.IOException
-import kotlinx.io.buffered
-import kotlinx.io.files.Path
-import kotlinx.io.files.SystemFileSystem
+import io.github.kotlinmania.io.IOException
+import io.github.kotlinmania.io.buffered
+import io.github.kotlinmania.io.files.Path
+import io.github.kotlinmania.io.files.SystemFileSystem
 
 /**
  * Builder that resolves a `.env`-style filename by walking from the current working directory

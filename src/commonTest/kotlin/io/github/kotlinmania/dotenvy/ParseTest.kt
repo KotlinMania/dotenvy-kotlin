@@ -1,8 +1,8 @@
 // port-lint: tests parse.rs
 package io.github.kotlinmania.dotenvy
 
-import kotlinx.io.Buffer
-import kotlinx.io.writeString
+import io.github.kotlinmania.io.Buffer
+import io.github.kotlinmania.io.writeString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
