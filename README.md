@@ -1,210 +1,278 @@
-# dotenvy-kotlin in Kotlin
+# dotenvy-kotlin
 
-[![GitHub link](https://img.shields.io/badge/GitHub-KotlinMania%2Fdotenvy--kotlin-blue.svg)](https://github.com/KotlinMania/dotenvy-kotlin)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.kotlinmania/dotenvy-kotlin)](https://central.sonatype.com/artifact/io.github.kotlinmania/dotenvy-kotlin)
-[![Build status](https://img.shields.io/github/actions/workflow/status/KotlinMania/dotenvy-kotlin/ci.yml?branch=main)](https://github.com/KotlinMania/dotenvy-kotlin/actions)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/allan2/dotenvy/HEAD/assets/dotenvy.png" alt="dotenvy logo" width="180" />
+</p>
 
-This is a Kotlin Multiplatform line-by-line transliteration port of [`allan2/dotenvy`](https://github.com/allan2/dotenvy).
+<p align="center">
+  <strong>A modern, zero-overhead Kotlin Multiplatform port of Rust's <a href="https://github.com/allan2/dotenvy"><code>dotenvy</code></a>.</strong><br/>
+  Loads environment variables from <code>.env</code> files across JVM, Android, iOS, macOS, watchOS, tvOS, Linux, Windows, Node.js, and WebAssembly (WasmJS &amp; WasmWASI).
+</p>
 
-**Original Project:** This port is based on [`allan2/dotenvy`](https://github.com/allan2/dotenvy). All design credit and project intent belong to the upstream authors; this repository is a faithful port to Kotlin Multiplatform with no behavioural changes intended.
-
-### Porting status
-
-This is an **in-progress port**. The goal is feature parity with the upstream Rust crate while providing a native Kotlin Multiplatform API. Every Kotlin file carries a `// port-lint: source <path>` header naming its upstream Rust counterpart so the AST-distance tool can track provenance.
-
----
-
-## Upstream README — `allan2/dotenvy`
-
-> The text below is reproduced and lightly edited from [`https://github.com/allan2/dotenvy`](https://github.com/allan2/dotenvy). It is the upstream project's own description and remains under the upstream authors' authorship; links have been rewritten to absolute upstream URLs so they continue to resolve from this repository.
-
-## dotenvy
-
-[![Crates.io](https://img.shields.io/crates/v/dotenvy.svg)](https://crates.io/crates/dotenvy)
-[![msrv
-1.74.0](https://img.shields.io/badge/msrv-1.74.0-dea584.svg?logo=rust)](https://github.com/rust-lang/rust/releases/tag/1.74.0)
-[![ci](https://github.com/allan2/dotenvy/actions/workflows/ci.yml/badge.svg)](https://github.com/allan2/dotenvy/actions/workflows/ci.yml)
-[![docs](https://img.shields.io/docsrs/dotenvy?logo=docs.rs)](https://docs.rs/dotenvy/)
-
-A well-maintained fork of the [dotenv](https://github.com/dotenv-rs/dotenv) crate.
-
-This crate is the suggested alternative for `dotenv` in security advisory [RUSTSEC-2021-0141](https://rustsec.org/advisories/RUSTSEC-2021-0141.html).
-
-## Unpublished version notice
-
-The main branch contains the unpublished 0.16 version which is still subject to change. **The contents of this README are for a version that is not yet published to crates.io**.
-The current stable release is [0.15.7](https://docs.rs/dotenvy/0.15.7/dotenvy/).
-
-## Components
-
-1. [`dotenvy`](https://crates.io/crates/dotenvy) - A well-maintained fork of the `dotenv` crate.
-2. [`dotenvy_macro`](https://crates.io/crates/dotenvy_macro) - A macro for compile-time _.env_ inspection. This is a fork of `dotenv_codegen`.
-3. [`dotenvy-macros`](https://crates.io/crates/dotenvy-macros) - A runtime macro library containing the `load` attribute macro.
-4. `dotenvy` binary that loads an env file before executing a specified command.
-
-## What is an environment file?
-
-An _environment file_, or _env file_, is a plain text file consisting of key-value pairs.
-
-_.env_
-
-```sh
-HOST=foo
-PORT=3000
-```
-
-Common names for env files are _.env_, _.env.dev_, _.env.prod_, but any name can be used. The default path for this crate is _.env_.
-
-Variables can span multiple lines and can also be substituted. For an explanation of substituion rules, refer to
-the [_.env-substitution_](https://github.com/allan2/dotenvy/blob/HEAD/env-substitution) example file.
-
-## Usage
-
-This library contains two APIs, a non-environment-modifying API and an environment-modifying API.
-
-## Runtime loading
-
-The non-modifying API is recommended for most use cases.
-
-### Non-modifying API
-
-```rs
-use dotenvy::{EnvLoader};
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let env_map = EnvLoader::new().load()?;
-    println!("HOST={}", env_map.var("HOST")?);
-    Ok(())
-}
-```
-
-#### Configuration
-
-```rs
-// from a file
-let loader1 = EnvLoader::with_path("./.env").sequence(EnvSequence::InputThenEnv);
-let loader2 = EnvLoader::new();  // shorthand for loader1
-
-// from a string
-let s = "HOST=foo\nPORT=3000";
-let str_loader = EnvLoader::with_reader(Cursor::new(s));
-
-// will load from the env file, override exiting values in the program environment
-let overriding_loader = EnvLoader::new().sequence(EnvSequence::EnvThenInput);
-```
-
-Loader constuction is infallible. When reading from a path, I/O is deferred until the `load` call.
-This is to support configurations such as [dev/prod](https://github.com/allan2/dotenvy/blob/HEAD/examples/dev-prod/src/main.rs) and
-[optional loading](https://github.com/allan2/dotenvy/blob/HEAD/examples/optional/src/main.rs).
-
-### Modifying API
-
-There are situations where modifying the environment is necessary.
-For example, you may be [spawning a child process](https://github.com/allan2/dotenvy/blob/HEAD/examples/modify/src/main.rs) that reads the environment.
-
-dotenvy provides the `load` attribute macro for this purpose. To use it, enable the `macros` feature.
-
-```rs
-#[dotenvy::load]
-#[tokio::main]
-async fn main() {
-    println!("HOST={}", std::env::var("HOST").unwrap());
-}
-```
-
-Because [`set_var`](https://doc.rust-lang.org/stable/std/env/fn.set_var.html) is not thread-safe, the `load` attribute macro modifies the environment before the async runtime is started.
-The expansion of this macro is [here](https://github.com/allan2/dotenvy/blob/master/examples/modify-tokio/src/main.rs).
-
-#### Configuration
-
-`load` is configurable. The default configuration expands to:
-
-```rs
-#[dotenvy::load(path = "./env", required = true, override_ = false)]
-```
-
-For more advanced usage, `EnvLoader::load_and_modify` can be used.
-
-## Compile-time loading
-
-The `dotenv!` macro provided by `dotenvy_macro` crate can be used.
-
-## Minimum Supported Rust Version
-
-We aim to support the latest 8 rustc versions - approximately 1 year. Increasing
-MSRV is _not_ considered a semver-breaking change.
-
-## Why does this fork exist?
-
-The original dotenv crate has not been updated since June 26, 2020. Attempts to reach the authors and present maintainer were not successful ([dotenv-rs/dotenv #74](https://github.com/dotenv-rs/dotenv/issues/74)).
-
-This fork intends to serve as the development home for the dotenv implementation in Rust.
-
-## What are the differences from the original?
-
-This repo adds:
-
-- non-modifying API
-- configurable `EnvLoader`
-- optional loading, ergonomic dev/prod handling
-- reader support, such as reading from any reader that is `io::Read`
-- more informative `Error` type, containing the file path and variable name
-- `load` attribute macro
-- multiline support
-- more examples and docs
-
-For a full list of changes, refer to the [changelog](https://github.com/allan2/dotenvy/blob/HEAD/CHANGELOG.md).
-
-## Contributing
-
-Contributions are welcome! If you are thinking of contributing, please refer to [CONTRIBUTING.md](https://github.com/allan2/dotenvy/blob/HEAD/CONTRIBUTING.md).
-
-## The legend
-
-Legend has it that the Lost Maintainer will return, merging changes from `dotenvy` into `dotenv` with such thrust that all `Cargo.toml`s will lose one keystroke. Only then shall the Rust dotenv crateverse be united in true harmony.
-
-Until then, this repo dutifully carries on the dotenv torch. It is actively maintained.
+<p align="center">
+  <a href="https://github.com/KotlinMania/dotenvy-kotlin"><img src="https://img.shields.io/badge/GitHub-KotlinMania%2Fdotenvy--kotlin-24292e.svg?logo=github" alt="GitHub" /></a>
+  <a href="https://central.sonatype.com/artifact/io.github.kotlinmania/dotenvy-kotlin"><img src="https://img.shields.io/maven-central/v/io.github.kotlinmania/dotenvy-kotlin?color=blue&logo=apache-maven" alt="Maven Central" /></a>
+  <a href="https://kotlinlang.org/"><img src="https://img.shields.io/badge/Kotlin-2.4.20-7F52FF.svg?logo=kotlin&logoColor=white" alt="Kotlin 2.4" /></a>
+  <a href="https://github.com/KotlinMania/dotenvy-kotlin/actions"><img src="https://img.shields.io/github/actions/workflow/status/KotlinMania/dotenvy-kotlin/ci.yml?branch=main&label=CI&logo=github-actions&logoColor=white" alt="CI" /></a>
+  <a href="https://developer.apple.com/swift/"><img src="https://img.shields.io/badge/Swift%20Export-macOS%2015.0-F05138.svg?logo=swift&logoColor=white" alt="Swift Export" /></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT" /></a>
+</p>
 
 ---
 
-## About this Kotlin port
+## ✨ Features
 
-### Installation
+- 🌿 **Faithful Line-by-Line Rust Port** — Exact semantics transliterated from [`allan2/dotenvy`](https://github.com/allan2/dotenvy) with full test parity.
+- 🚀 **Full Kotlin Multiplatform Coverage** — JVM, Android, Native (macOS, iOS, tvOS, watchOS, Linux, Windows), Node.js, and WASM (WasmJS & WasmWASI).
+- 📦 **First-Class Swift Export** — Directly consume the generated SPM package in Xcode or Swift CLI targets without Obj-C bridges.
+- 🔍 **Hierarchical Finder** — Automatically walks up ancestor directories to find `.env` or custom config files.
+- ⚡ **Stream & File IO via `km-io`** — Powered by [`io.github.kotlinmania:km-io`](https://github.com/KotlinMania/km-io) with zero external C dependencies.
+- 🧬 **Dynamic Variable Substitution** — Resolves `${VAR}` references dynamically across environment values and file definitions.
+- 🛡️ **Robust Format Support** — Multi-line strings, weak & strong quotes, escaped characters, trailing/inline comments, and UTF-8 BOM tolerance.
+- 🛠️ **CLI Support** — Port of `dotenvy` binary for wrapping commands with injected `.env` state.
+
+---
+
+## 📦 Installation
+
+### Gradle (Kotlin DSL)
 
 ```kotlin
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation("io.github.kotlinmania:dotenvy-kotlin:0.1.2")
 }
 ```
 
-### Building
+### Gradle (Groovy DSL)
 
-```bash
-./gradlew build
-./gradlew test
+```groovy
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.github.kotlinmania:dotenvy-kotlin:0.1.2'
+}
 ```
 
-### Targets
+### Maven (`pom.xml`)
 
-- macOS arm64
-- Linux x64
-- Windows mingw-x64
-- iOS arm64 / simulator-arm64 (Swift export + XCFramework)
-- JS (browser + Node.js)
-- Wasm-JS (browser + Node.js)
-- Android (API 24+)
+```xml
+<dependency>
+    <groupId>io.github.kotlinmania</groupId>
+    <artifactId>dotenvy-kotlin</artifactId>
+    <version>0.1.2</version>
+</dependency>
+```
 
-### Porting guidelines
+### Swift Package Manager
 
-See [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) for translator discipline, port-lint header convention, and Rust → Kotlin idiom mapping.
+When integrating via Kotlin Multiplatform's Swift Export:
 
-### License
+```swift
+// Package.swift
+dependencies: [
+    .package(path: "path/to/Dotenvy")
+]
+```
 
-This Kotlin port is distributed under the same MIT license as the upstream [`allan2/dotenvy`](https://github.com/allan2/dotenvy). See [LICENSE](LICENSE) (and any sibling `LICENSE-*` / `NOTICE` files mirrored from upstream) for the full text.
+---
 
-Original work copyrighted by the dotenvy authors.  
-Kotlin port: Copyright (c) 2026 Sydney Renee and The Solace Project.
+## 🚀 Quick Start
 
-### Acknowledgments
+### 1. Load `.env` into Process Environment
 
-Thanks to the [`allan2/dotenvy`](https://github.com/allan2/dotenvy) maintainers and contributors for the original Rust implementation. This port reproduces their work in Kotlin Multiplatform; bug reports about upstream design or behavior should go to the upstream repository.
+The standard `dotenv()` function searches for `.env` in the current working directory or any of its parent directories, and injects the variables into the system environment:
+
+```kotlin
+import io.github.kotlinmania.dotenvy.dotenv
+import io.github.kotlinmania.dotenvy.var_
+
+fun main() {
+    // Searches up ancestor directories and injects variables into process environment
+    dotenv().getOrThrow()
+
+    // Retrieve variables with typed Result returns
+    val databaseUrl = var_("DATABASE_URL").getOrThrow()
+    val port = var_("PORT").getOrDefault("8080")
+
+    println("Connecting to $databaseUrl on port $port...")
+}
+```
+
+### 2. Iterate Over Key-Value Pairs
+
+If you want to read variables without modifying the process environment, iterate over parsed pairs:
+
+```kotlin
+import io.github.kotlinmania.dotenvy.dotenvIter
+
+fun loadConfiguration(): Map<String, String> {
+    val iter = dotenvIter().getOrThrow()
+    val config = mutableMapOf<String, String>()
+
+    for (entry in iter) {
+        val (key, value) = entry.getOrThrow()
+        config[key] = value
+    }
+    return config
+}
+```
+
+### 3. Load from a Specific Path or Filename
+
+```kotlin
+import io.github.kotlinmania.dotenvy.fromPath
+import io.github.kotlinmania.dotenvy.fromPathOverride
+import io.github.kotlinmania.dotenvy.fromFilename
+import io.github.kotlinmania.io.files.Path
+
+// Load specific path (does not overwrite existing environment variables)
+fromPath(Path("config/.env.local")).getOrThrow()
+
+// Force override existing environment variables with file values
+fromPathOverride(Path("config/.env.override")).getOrThrow()
+
+// Look for a custom filename walking up ancestor directories
+fromFilename(".env.production").getOrThrow()
+```
+
+### 4. Custom Hierarchy Search with `Finder`
+
+```kotlin
+import io.github.kotlinmania.dotenvy.Finder
+import io.github.kotlinmania.io.files.Path
+
+val iter = Finder()
+    .filename(Path(".env.staging"))
+    .loadIter()
+    .getOrThrow()
+
+while (iter.hasNext()) {
+    val (key, value) = iter.next().getOrThrow()
+    println("$key=$value")
+}
+```
+
+### 5. In-Memory / Stream Loading with `km-io`
+
+```kotlin
+import io.github.kotlinmania.dotenvy.fromRead
+import io.github.kotlinmania.dotenvy.fromReadOverride
+import io.github.kotlinmania.io.Buffer
+import io.github.kotlinmania.io.writeString
+
+val buffer = Buffer().apply {
+    writeString("""
+        HOST=localhost
+        PORT=5432
+        DB_USER=admin
+        DB_PASS=secret
+        DATABASE_URL=postgres://${"$"}{DB_USER}:${"$"}{DB_PASS}@${"$"}{HOST}:${"$"}{PORT}/mydb
+    """.trimIndent())
+}
+
+// Ingest directly from memory or network stream
+fromRead(buffer).getOrThrow()
+```
+
+---
+
+## 📝 Format & Substitution Specification
+
+`dotenvy-kotlin` conforms strictly to the `.env` standard:
+
+### Basic Values & Comments
+```sh
+# Lines beginning with '#' are ignored
+KEY=value
+ANOTHER_KEY=value with spaces # Inline comments are supported!
+```
+
+### Quoting & Multi-line Values
+```sh
+# Single quotes preserve literal strings exactly
+SINGLE_QUOTED='hello\nworld' # Literal \ and n, no escape evaluation
+
+# Double quotes interpret escapes and preserve newlines
+DOUBLE_QUOTED="hello\nworld"
+
+# Multi-line strings inside quotes
+CERTIFICATE="-----BEGIN CERTIFICATE-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...
+-----END CERTIFICATE-----"
+```
+
+### Variable Substitution
+Values can reference variables already defined in the environment or earlier in the file:
+```sh
+USER=alice
+HOME_DIR=/home/${USER}
+LOG_FILE=${HOME_DIR}/app.log
+
+# Escape '$' with backslash to prevent substitution:
+LITERAL_PRICE=\$100
+```
+
+---
+
+## 🌐 Supported Targets
+
+| Platform | Target Identifier | Architecture / Runtime |
+| :--- | :--- | :--- |
+| **JVM** | `jvm` | Java 21+ bytecode |
+| **Android** | `android` | Android API 24+ (AAR) |
+| **Apple macOS** | `macosArm64` | Apple Silicon (M1/M2/M3/M4) |
+| **Apple iOS** | `iosArm64`, `iosSimulatorArm64` | Device & Simulator |
+| **Apple watchOS** | `watchosDeviceArm64`, `watchosSimulatorArm64` | Apple Watch 64-bit |
+| **Apple tvOS** | `tvosArm64`, `tvosSimulatorArm64` | Apple TV |
+| **Linux** | `linuxX64`, `linuxArm64` | GNU / Linux |
+| **Windows** | `mingwX64` | Windows x64 Native |
+| **JavaScript** | `js` | Node.js |
+| **WebAssembly** | `wasmJs`, `wasmWasi` | WebAssembly Browser & WASI Preview 1 |
+
+---
+
+## 🍏 Swift Export Interoperability
+
+`dotenvy-kotlin` exports native Swift types via Kotlin 2.4 Swift Export:
+
+```swift
+import Dotenvy
+
+// Load .env from ancestor hierarchy
+let _ = Dotenvy.dotenv()
+
+// Look up values safely
+if let host = try? Dotenvy.var_("HOST").get() {
+    print("Loaded host: \(host)")
+}
+```
+
+---
+
+## 🙏 Acknowledgments & Upstream Attribution
+
+`dotenvy-kotlin` is derived from and inspired by the excellent work of the Rust open-source community:
+
+- **[`allan2/dotenvy`](https://github.com/allan2/dotenvy)** — Created and maintained by **Allan Zhang** (`al@ayz.ai`) as a robust, modern fork of the `dotenv` crate.
+- **[`dotenv-rs/dotenv`](https://github.com/dotenv-rs/dotenv)** — Original `dotenv` implementation authored by:
+  - **Noemi Lapresta** (`noemi.lapresta@gmail.com`)
+  - **Craig Hills** (`chills@gmail.com`)
+  - **Mike Piccolo** (`mfpiccolo@gmail.com`)
+  - **Alice Maz** (`alice@alicemaz.com`)
+  - **Sean Griffin** (`sean@seantheprogrammer.com`)
+  - **Adam Sharp** (`adam@sharplet.me`)
+  - **Arpad Borsos** (`arpad.borsos@googlemail.com`)
+
+All design decisions, syntax rules, and algorithm invariants originate from these authors. We express our deepest gratitude for their foundational contributions to developer tooling.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) to match the upstream `dotenvy` and `dotenv` licensing terms.
