@@ -1,13 +1,9 @@
-@file:OptIn(ExperimentalForeignApi::class)
-
 package io.github.kotlinmania.dotenvy
 
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.toKString
-import platform.posix.getenv
-import platform.posix.setenv
+import io.github.kotlinmania.libc.unix.getenv
+import io.github.kotlinmania.libc.unix.setenv
 
-internal actual fun envVar(name: String): String? = getenv(name)?.toKString()
+internal actual fun envVar(name: String): String? = getenv(name)
 
 internal actual fun setEnvVar(
     name: String,

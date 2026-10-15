@@ -14,6 +14,8 @@ clap-kotlin = "0.1.1"
 once-cell-kotlin = "0.1.1"
 tempfile-kotlin = "0.1.0"
 rand-kotlin = "0.1.0"
+libc-kotlin = "0.1.7"
+windows-sys-kotlin = "0.1.1"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -36,6 +38,8 @@ clap-kotlin = { module = "io.github.kotlinmania:clap-kotlin", version.ref = "cla
 once-cell-kotlin = { module = "io.github.kotlinmania:once-cell-kotlin", version.ref = "once-cell-kotlin" }
 tempfile-kotlin = { module = "io.github.kotlinmania:tempfile-kotlin", version.ref = "tempfile-kotlin" }
 rand-kotlin = { module = "io.github.kotlinmania:rand-kotlin", version.ref = "rand-kotlin" }
+libc-kotlin = { module = "io.github.kotlinmania:libc-kotlin", version.ref = "libc-kotlin" }
+windows-sys-kotlin = { module = "io.github.kotlinmania:windows-sys-kotlin", version.ref = "windows-sys-kotlin" }
 
 [bundles]
 dotenvy-commonMain = [
@@ -45,5 +49,6 @@ dotenvy-commonMain = [
   "kotlinx-datetime",
   "collections-immutable",
   "km-io",
+  "libc-kotlin",
 ]
 

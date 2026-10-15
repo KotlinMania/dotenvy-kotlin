@@ -1,12 +1,15 @@
 package io.github.kotlinmania.dotenvy
 
-internal actual fun envVar(name: String): String? = null
+import io.github.kotlinmania.libc.wasi.getenv
+import io.github.kotlinmania.libc.wasi.setenv
+
+internal actual fun envVar(name: String): String? = getenv(name)
 
 internal actual fun setEnvVar(
     name: String,
     value: String,
 ) {
-    // intentionally empty
+    setenv(name, value, 1)
 }
 
 internal actual fun envVars(): List<Pair<String, String>> = emptyList()

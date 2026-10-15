@@ -1,17 +1,15 @@
-@file:OptIn(ExperimentalForeignApi::class)
-
 package io.github.kotlinmania.dotenvy
 
+import io.github.kotlinmania.libc.unix.getenv
+import io.github.kotlinmania.libc.unix.setenv
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.toKString
 import platform.posix.getcwd
-import platform.posix.getenv
-import platform.posix.setenv
 
-internal actual fun envVar(name: String): String? = getenv(name)?.toKString()
+internal actual fun envVar(name: String): String? = getenv(name)
 
 internal actual fun setEnvVar(
     name: String,
@@ -22,6 +20,7 @@ internal actual fun setEnvVar(
 
 internal actual fun envVars(): List<Pair<String, String>> = emptyList()
 
+@OptIn(ExperimentalForeignApi::class)
 internal actual fun currentDirectory(): String? =
     memScoped {
         val size = 4096
