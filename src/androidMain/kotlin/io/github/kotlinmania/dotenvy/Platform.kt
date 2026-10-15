@@ -1,18 +1,23 @@
 package io.github.kotlinmania.dotenvy
 
-internal actual fun envVar(name: String): String? = System.getenv(name)
+import java.util.concurrent.ConcurrentHashMap
 
-// Android (and the JVM more broadly) does not expose a portable way to mutate the running
-// process's environment block. Reads in this process see the unmodified system environment;
-// callers wanting to override values should use a different ingestion path (for example,
-// a configuration map populated via [Iter]).
+private val androidEnvOverlay: ConcurrentHashMap<String, String> = ConcurrentHashMap()
+
+internal actual fun envVar(name: String): String? = androidEnvOverlay[name] ?: System.getenv(name)
+
 internal actual fun setEnvVar(
     name: String,
     value: String,
 ) {
-    // intentionally empty
+    androidEnvOverlay[name] = value
 }
 
-internal actual fun envVars(): List<Pair<String, String>> = System.getenv().entries.map { (k, v) -> k to v }
+internal actual fun envVars(): List<Pair<String, String>> {
+    val merged = LinkedHashMap<String, String>()
+    merged.putAll(System.getenv())
+    merged.putAll(androidEnvOverlay)
+    return merged.entries.map { (k, v) -> k to v }
+}
 
 internal actual fun currentDirectory(): String? = System.getProperty("user.dir")
