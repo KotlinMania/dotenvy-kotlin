@@ -1,11 +1,10 @@
-// port-lint: tests common/mod.rs
 package io.github.kotlinmania.dotenvy
 
 import io.github.kotlinmania.io.buffered
 import io.github.kotlinmania.io.files.Path
 import io.github.kotlinmania.io.files.SystemFileSystem
 import io.github.kotlinmania.io.writeString
-import io.github.kotlinmania.rand.rng
+import io.github.kotlinmania.rand.rngs.rng
 
 public class TempDir(
     private val pathValue: String,
