@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.kotlinmania:dotenvy-kotlin:0.1.2")
+    implementation("io.github.kotlinmania:dotenvy-kotlin:0.1.3")
 }
 ```
 
@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.kotlinmania:dotenvy-kotlin:0.1.2'
+    implementation 'io.github.kotlinmania:dotenvy-kotlin:0.1.3'
 }
 ```
 
